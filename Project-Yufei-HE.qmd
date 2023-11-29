@@ -137,3 +137,29 @@ owid_selected_no_na <- owid_selected %>%
     !is.na(trade_co2)
   )
 ```
+
+**Tables of basic information about the data file:**
+
+```{r}
+dimensions <- dim(owid_selected_no_na)
+
+descriptive_stats <- summary(owid_selected_no_na)
+
+cat("Rows:", dimensions[1], "\n")
+cat("Columns:", dimensions[2], "\n\n")
+print(descriptive_stats)
+```
+
+```{r}
+dimensions_2 <- dim(owid)
+cat("Rows:", dimensions_2[1], "\n")
+cat("Columns:", dimensions_2[2], "\n\n")
+```
+
+```{r}
+#| message: false
+emiss <- vroom(here("EMISSIONS_ANNUAL_1830-2021.csv"))
+dimensions_3 <- dim(emiss)
+cat("Rows:", dimensions_3[1], "\n")
+cat("Columns:", dimensions_3[2], "\n\n")
+```
