@@ -88,3 +88,52 @@ This expanded and refined data construction provides a solid foundation for anal
 **13. temperature_change_from_co2:** Change in global mean surface temperature (in °C) caused by CO2 emissions. This measures each country's contribution to global mean surface temperature (GMST) rise from its cumulative emissions of carbon dioxide. The warming effects of each gas are calculated based on cumulative CO2-equivalent emissions using the Global Warming Potential (GWP\*) approach.
 
 **14. trade_co2:** Annual net carbon dioxide (CO2) emissions embedded in trade, measured in million tonnes.
+
+**Data cleaning:**
+
+In this step, we have cleaned the data by selecting the data from 1991 to 2021 to ensure that the results are not compromised by the age of the data. Additionally, we chose 14 variables for our analysis because these variables are highly relevant to the research question we are investigating. Lastly, we removed missing data, focusing our analysis on countries without missing data. The purpose of data cleaning is to improve data quality, enhance model performance, and increase the efficiency of analysis. It achieves these goals by removing or correcting errors and inconsistencies in the dataset, ensuring that the results of data analysis are more accurate and reliable.
+
+```{r}
+#| message: false
+here::i_am("DM-Project.Rproj")
+library(here)
+library(vroom)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+#| message: false
+owid <- vroom(here("owid-co2-data.csv"))
+```
+
+```{r}
+owid_filtered <- owid %>%
+  filter(year >= 1991, year <= 2021)
+```
+
+```{r}
+owid_selected <- owid_filtered %>%
+  select(country, year, population, gdp, co2, co2_per_capita, co2_per_gdp, co2_per_unit_energy, energy_per_capita, energy_per_gdp, methane, methane_per_capita, temperature_change_from_co2, trade_co2)
+```
+
+```{r}
+owid_selected_no_na <- owid_selected %>%
+  filter(
+    !is.na(country),
+    !is.na(year),
+    !is.na(population),
+    !is.na(gdp),
+    !is.na(co2),
+    !is.na(co2_per_capita),
+    !is.na(co2_per_gdp),
+    !is.na(co2_per_unit_energy),
+    !is.na(energy_per_capita),
+    !is.na(energy_per_gdp),
+    !is.na(methane),
+    !is.na(methane_per_capita),
+    !is.na(temperature_change_from_co2),
+    !is.na(trade_co2)
+  )
+```
