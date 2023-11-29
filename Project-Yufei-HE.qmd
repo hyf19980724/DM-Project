@@ -163,3 +163,25 @@ dimensions_3 <- dim(emiss)
 cat("Rows:", dimensions_3[1], "\n")
 cat("Columns:", dimensions_3[2], "\n\n")
 ```
+
+**Research Question:**
+
+Is economic growth inevitably accompanied by a deterioration in environmental quality?
+
+**Introduction：**
+
+In the 1970s, economists became interested in the role of the environment in the development of a country. One of the symbols of this awareness is the 1972 United Nations conference in Stockholm. During this conference, different positions were taken. French economists such as Ignacy Sachs proposed eco-development. This approach aims to integrate the interests of ecology in development. The environmental problems linked to growth cannot be solved by continuing or stopping growth, but by reorienting it. Therefore, environmental issues are of increasing concern to scientists and politicians.
+
+Today, environmental degradation and resource depletion are major challenges at the stage of economic take-off in most developing and newly industrialized countries. On the one hand, economic growth reduces the quality of the environment due to the exploitation of natural resources and the increase in emissions of industrial pollutants; on the other hand, resource depletion and environmental degradation in turn prevent sustainable economic growth. It is therefore relevant to ask the following question: is economic growth inevitably accompanied by a degradation of the quality of the environment? This is an issue that prompts us to build a model.
+
+Based on Simon Kuznets' famous inverted "U" curve between income distribution and economic development, some economists point out that there may be an inverted "U" relationship between economic development and environmental quality. That is, economic growth and increasing per capita income in the early stages of development would lead to a decline in environmental quality. However, once economic development exceeds a certain threshold, further increases in per capita income would help reduce environmental pollution. This hypothesis is called the environmental Kuznets curve hypothesis. It is the subject of much debate. Many researchers have then conducted extensive studies on the relevance of this conjuncture using cross-sectional, time-series or panel data for different countries.
+
+**Analysis & Objective:**
+
+In our study, the relationship between economic growth and environmental degradation is examined using panel data. The objective is to verify the relevance of the environmental Kuznets curve.
+
+We will then test the veracity of the hypothesis of the environmental Kuznets curve through the data made available. To do this, we will start by performing a descriptive analysis of our data. Then, we estimate the impact of economic growth on the environment through a regression on our explanatory variables. We conclude by discussing the results obtained.
+
+**The environmental Kuznets curve：**
+
+The analysis of a hypothetical relationship between environmental degradation and economic growth has its origins in research carried out by Simon Kuznets. He related measures of inequality in income distribution to economic growth in 1955. Using data from the United States and the United Kingdom, Kuznets estimated that income inequality tended to rise at low levels of development and then fall, giving an inverted "U" shaped relationship. In 1991, Grossman and Krueger decided to test this hypothesis on the relationship between environmental degradation and GDP per capita. It will be called the Kuznets environmental curve. This hypothesis states that environmental pressures increase up to a certain point as income increases, after which they decrease.
