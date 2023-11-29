@@ -42,3 +42,32 @@ Population：
 [[https://ourworldindata.org/population-sources]{.underline}](https://ourworldindata.org/population-sources)
 
 [[https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population]{.underline}](https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population)
+
+**Description of each variable:**
+
+**1. Country:** Geographic location.
+
+**2. Year:** Year of observation.
+
+**3. Population:** Population by country and year.
+
+**4. GDP:** Gross domestic product measured in international-\$ using 2011 prices to adjust for price changes over time (inflation) and price differences between countries.
+
+**5. CO2:** Annual total emissions of carbon dioxide (CO2), excluding land-use change, measured in million tonnes.
+
+**6. co2_per_capita:** Annual CO2 emissions (per capita) - Annual total emissions of carbon dioxide (CO2), excluding land-use change, measured in tonnes per person.
+
+**7. co2_per_gdp:** Annual CO2 emissions per GDP (kg per international-\$) - Annual total emissions of carbon dioxide (CO2), excluding land-use change, measured in kilograms per dollar of GDP (2011 international-\$).
+
+**8. co2_per_unit_energy**: Annual CO2 emissions per unit energy (kg per kilowatt-hour) - Annual total emissions of carbon dioxide (CO2), excluding land-use change, measured in kilograms per kilowatt-hour of primary energy consumption.
+
+**9. energy_per_capita:** Primary energy consumption per capita, measured in kilowatt-hours per person per year.
+
+**10. energy_per_gdp:** Primary energy consumption per unit of gross domestic product, measured in kilowatt-hours per international-\$.
+
+**11. Methane:** Total methane emissions including land-use change and forestry - Emissions are measured in million tonnes of carbon dioxide-equivalents.
+
+**12. methane_per_capita:** Total methane emissions per capita including land-use change and forestry - Emissions are measured in tonnes of carbon dioxide-equivalents per person.
+
+**13. temperature_change_from_co2:** Change in global mean surface temperature (in °C) caused by CO2 emissions. This measures each country's contribution to global mean surface temperature (GMST) rise from its cumulative emissions of carbon dioxide. The warming effects of each gas are calculated based on cumulative CO2-equivalent emissions using the Global Warming Potential (GWP\*) approach.
+
