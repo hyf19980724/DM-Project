@@ -185,3 +185,18 @@ We will then test the veracity of the hypothesis of the environmental Kuznets cu
 **The environmental Kuznets curve：**
 
 The analysis of a hypothetical relationship between environmental degradation and economic growth has its origins in research carried out by Simon Kuznets. He related measures of inequality in income distribution to economic growth in 1955. Using data from the United States and the United Kingdom, Kuznets estimated that income inequality tended to rise at low levels of development and then fall, giving an inverted "U" shaped relationship. In 1991, Grossman and Krueger decided to test this hypothesis on the relationship between environmental degradation and GDP per capita. It will be called the Kuznets environmental curve. This hypothesis states that environmental pressures increase up to a certain point as income increases, after which they decrease.
+
+**A graphical representation of "CO2 emission" variable:**
+
+France's total annual CO2 emissions measured in million tonnes are shown in the graph below.
+
+```{r}
+france <- owid_selected_no_na %>%
+  filter(country == "France")
+ggplot(france, aes(x = year, y = co2)) + 
+  geom_line(color = "blue") +
+  theme_minimal() +
+  labs(title = "CO2 Emissions Over Time",
+       x = "Time",
+       y = "CO2 Emissions")
+```
