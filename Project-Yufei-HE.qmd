@@ -5,11 +5,11 @@ format: html
 editor: visual
 ---
 
-**A link to the github project:**
+### **A link to the github project:**
 
 https://github.com/hyf19980724/DM-Project.git
 
-**Links to the sources:**
+### **Links to the sources:**
 
 A dataset describing the global warming response to national emissions CO2, CH4 and N2O from fossil and land use sources during 1851-2021. 
 
@@ -43,7 +43,7 @@ Population：
 
 [[https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population]{.underline}](https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population)
 
-**Description of Sources**
+### **Description of Sources:**
 
 GDP: Gross Domestic Product (GDP) is the core dependent variable representing the economic development level of a country. We sourced GDP data for various countries across different decades from the University of Groningen and the World Bank databases. To maintain consistency, we converted all GDP figures into U.S. dollars, using the U.S. GDP data from 2015 as a benchmark. This approach facilitates cross-country comparisons and temporal analysis.
 
@@ -59,7 +59,7 @@ Climate Change and Trade Variables: \`temperature_change_from_co2\` and \`trade_
 
 This expanded and refined data construction provides a solid foundation for analyzing the intricate relationships between economic growth, population dynamics, environmental pollution, and energy consumption. It also allows for a nuanced understanding of how these factors interplay at both the national and global levels.
 
-**Description of each variable:**
+### **Description of each variable:**
 
 **1. Country:** Geographic location.
 
@@ -89,7 +89,7 @@ This expanded and refined data construction provides a solid foundation for anal
 
 **14. trade_co2:** Annual net carbon dioxide (CO2) emissions embedded in trade, measured in million tonnes.
 
-**Data cleaning:**
+### **Data cleaning:**
 
 In this step, we have cleaned the data by selecting the data from 1991 to 2021 to ensure that the results are not compromised by the age of the data. Additionally, we chose 14 variables for our analysis because these variables are highly relevant to the research question we are investigating. Lastly, we removed missing data, focusing our analysis on countries without missing data. The purpose of data cleaning is to improve data quality, enhance model performance, and increase the efficiency of analysis. It achieves these goals by removing or correcting errors and inconsistencies in the dataset, ensuring that the results of data analysis are more accurate and reliable.
 
@@ -138,7 +138,7 @@ owid_selected_no_na <- owid_selected %>%
   )
 ```
 
-**Tables of basic information about the data file:**
+### **Tables of basic information about the data file:**
 
 ```{r}
 dimensions <- dim(owid_selected_no_na)
@@ -164,7 +164,7 @@ cat("Rows:", dimensions_3[1], "\n")
 cat("Columns:", dimensions_3[2], "\n\n")
 ```
 
-**Research Question:**
+### **Research Question:** 
 
 Is economic growth inevitably accompanied by a deterioration in environmental quality?
 
@@ -186,7 +186,7 @@ We will then test the veracity of the hypothesis of the environmental Kuznets cu
 
 The analysis of a hypothetical relationship between environmental degradation and economic growth has its origins in research carried out by Simon Kuznets. He related measures of inequality in income distribution to economic growth in 1955. Using data from the United States and the United Kingdom, Kuznets estimated that income inequality tended to rise at low levels of development and then fall, giving an inverted "U" shaped relationship. In 1991, Grossman and Krueger decided to test this hypothesis on the relationship between environmental degradation and GDP per capita. It will be called the Kuznets environmental curve. This hypothesis states that environmental pressures increase up to a certain point as income increases, after which they decrease.
 
-**A graphical representation of "CO2 emission" variable:**
+### **A graphical representation of "CO2 emission" variable:**
 
 France's total annual CO2 emissions measured in million tonnes are shown in the graph below.
 
