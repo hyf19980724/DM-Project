@@ -8,3 +8,37 @@ editor: visual
 **A link to the github project:**
 
 https://github.com/hyf19980724/DM-Project.git
+
+**Links to the sources:**
+
+A dataset describing the global warming response to national emissions CO2, CH4 and N2O from fossil and land use sources during 1851-2021. 
+
+[[https://zenodo.org/records/7636699#.ZFCy4exBweZ]{.underline}](#.ZFCy4exBweZ)
+
+Annual consumption-based emissions of CO2 and annual CO2 emissions embedded in trade: 
+
+[[https://www.eia.gov/opendata/index.php#bulk-downloads]{.underline}](#bulk-downloads) ;
+
+[[https://zenodo.org/records/7215364#.Y3y3sezMIeY]{.underline}](#.Y3y3sezMIeY)
+
+Greenhouse gas emissions (including methane and nitrous oxide) by sector :
+
+[https://www.climatewatchdata.org/data-explorer/historical-emissions?historical-emissions-data-sources=climate-watch&historical-emissions-gases=all-ghg&historical-emissions-regions=All%20Selected&historical-emissions-sectors=total-including-lucf%2Ctotal-including-lucf&page=1](https://www.climatewatchdata.org/data-explorer/historical-emissions?historical-emissions-data-sources=climate-watch&historical-emissions-gases=all-ghg&historical-emissions-regions=All Selected&historical-emissions-sectors=total-including-lucf,total-including-lucf&page=1)
+
+Statistical review of world energy:  
+
+[[https://www.energyinst.org/statistical-review]{.underline}](https://www.energyinst.org/statistical-review) ;
+
+[[https://databank.worldbank.org/source/sustainable-development-goals-(sdgs)#]{.underline}](https://databank.worldbank.org/source/sustainable-development-goals-(sdgs))
+
+GDP: 
+
+[[https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2020]{.underline}](https://www.rug.nl/ggdc/historicaldevelopment/maddison/releases/maddison-project-database-2020)
+
+[[https://databank.worldbank.org/reports.aspx?source=2&series=EN.ATM.CO2E.PC&country=#]{.underline}](https://databank.worldbank.org/reports.aspx?source=2&series=EN.ATM.CO2E.PC&country=)
+
+Population：
+
+[[https://ourworldindata.org/population-sources]{.underline}](https://ourworldindata.org/population-sources)
+
+[[https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population]{.underline}](https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population)
