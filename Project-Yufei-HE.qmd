@@ -9,7 +9,7 @@ editor: visual
 
 https://github.com/hyf19980724/DM-Project.git
 
-**Links to the sources:**
+**Links to the sources:**
 
 A dataset describing the global warming response to national emissions CO2, CH4 and N2O from fossil and land use sources during 1851-2021. 
 
@@ -43,6 +43,22 @@ Population：
 
 [[https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population]{.underline}](https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population)
 
+**Description of Sources**
+
+GDP: Gross Domestic Product (GDP) is the core dependent variable representing the economic development level of a country. We sourced GDP data for various countries across different decades from the University of Groningen and the World Bank databases. To maintain consistency, we converted all GDP figures into U.S. dollars, using the U.S. GDP data from 2015 as a benchmark. This approach facilitates cross-country comparisons and temporal analysis.
+
+Population: Population data were acquired from Our World in Data, Wikipedia, and the World Bank. Population is a critical factor influencing both economic development and environmental pollution. Including population in our analysis helps mitigate endogeneity concerns, allowing for a more accurate assessment of the relationships between population dynamics, economic growth, and environmental impacts.
+
+CO2 Metrics: Variables such as \`co2\`, \`co2_per_capita\`, \`co2_per_gdp\`, and \`co2_per_unit_energy\` were sourced from the U.S. Energy Information Administration (EIA) and Zenodo databases. These variables are central explanatory factors representing environmental aspects. We ensured the reliability of these data by cross-verifying between the two databases. Given the varied development levels of countries, total CO2 emissions alone may not fully represent a country's pollution level. Therefore, we included additional variables to assess the heterogeneous impacts of environmental issues on economic growth across different nations.
+
+Methane Metrics: \`methane\` and \`methane_per_capita\` data, similar to CO2 data, were obtained from the same sources. Relying solely on CO2 to indicate environmental pollution has its limitations, as some industries, like the chemical industry, emit other gases like methane. Given that greenhouse gases contributing to global warming are not limited to CO2, incorporating methane data provides a more comprehensive view of environmental pollution.
+
+Energy Consumption Metrics: \`energy_per_capita\` and \`energy_per_gdp\` data were sourced from the Statistical Review of World Energy database and the World Bank. Including energy consumption in our regression analysis is crucial. Energy consumption is not only a direct driver of economic development but also a primary source of environmental pollution. This inclusion helps us explore the causal relationships and conduct channel testing between energy, economy, and environmental pollution.
+
+Climate Change and Trade Variables: \`temperature_change_from_co2\` and \`trade_co2\` data were also sourced from the EIA and Zenodo databases. The increase in temperature due to CO2 emissions significantly impacts economic activities. Moreover, trade activities, being a vital part of the economy---especially in the context of international economic exchanges---can be further analyzed for robustness checks. These variables allow us to understand the broader impacts of environmental change on global trade and economic dynamics.
+
+This expanded and refined data construction provides a solid foundation for analyzing the intricate relationships between economic growth, population dynamics, environmental pollution, and energy consumption. It also allows for a nuanced understanding of how these factors interplay at both the national and global levels.
+
 **Description of each variable:**
 
 **1. Country:** Geographic location.
@@ -71,3 +87,4 @@ Population：
 
 **13. temperature_change_from_co2:** Change in global mean surface temperature (in °C) caused by CO2 emissions. This measures each country's contribution to global mean surface temperature (GMST) rise from its cumulative emissions of carbon dioxide. The warming effects of each gas are calculated based on cumulative CO2-equivalent emissions using the Global Warming Potential (GWP\*) approach.
 
+**14. trade_co2:** Annual net carbon dioxide (CO2) emissions embedded in trade, measured in million tonnes.
