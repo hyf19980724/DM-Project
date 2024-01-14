@@ -3,6 +3,7 @@ title: "DM-Project"
 author: "Yufei HE&Xuanzheng LI"
 format: pdf
 editor: visual
+toc: true
 knitr:
   opts_chunk:
     warning: false
@@ -10,11 +11,11 @@ knitr:
     message: false
 ---
 
-### **Research Question:**
+### 1. Research Question
 
 Is economic growth inevitably accompanied by a deterioration in environmental quality?
 
-#### **Introduction：**
+#### 1.1 Introduction
 
 In the 1970s, economists became interested in the role of the environment in the development of a country. One of the symbols of this awareness is the 1972 United Nations conference in Stockholm. During this conference, different positions were taken. French economists such as Ignacy Sachs proposed eco-development. This approach aims to integrate the interests of ecology in development. The environmental problems linked to growth cannot be solved by continuing or stopping growth, but by reorienting it. Therefore, environmental issues are of increasing concern to scientists and politicians.
 
@@ -22,17 +23,78 @@ Today, environmental degradation and resource depletion are major challenges at 
 
 Based on Simon Kuznets' famous inverted "U" curve between income distribution and economic development, some economists point out that there may be an inverted "U" relationship between economic development and environmental quality. That is, economic growth and increasing per capita income in the early stages of development would lead to a decline in environmental quality. However, once economic development exceeds a certain threshold, further increases in per capita income would help reduce environmental pollution. This hypothesis is called the Environmental Kuznets Curve hypothesis. It is the subject of much debate. Many researchers have then conducted extensive studies on the relevance of this conjuncture using cross-sectional, time-series or panel data for different countries.
 
-#### **Analysis & Objective:**
+#### 1.2 Analysis & Objective
 
 In our study, the relationship between economic growth and environmental degradation is examined using time-series data. The objective is to verify the relevance of the Environmental Kuznets Curve.
 
 We will then test the veracity of the hypothesis of the Environmental Kuznets Curve through the data made available. To do this, we will start by performing a descriptive analysis of our data. Then, we estimate the impact of economic growth on the environment through a regression on our explanatory variables. We conclude by discussing the results obtained.
 
-#### **The Environmental Kuznets Curve：**
+#### 1.3 The Environmental Kuznets Curve
 
 The analysis of a hypothetical relationship between environmental degradation and economic growth has its origins in research carried out by Simon Kuznets. He related measures of inequality in income distribution to economic growth in 1955. Using data from the United States and the United Kingdom, Kuznets estimated that income inequality tended to rise at low levels of development and then fall, giving an inverted "U" shaped relationship. In 1991, Grossman and Krueger decided to test this hypothesis on the relationship between environmental degradation and GDP per capita. It will be called the Environmental Kuznets Curve. This hypothesis states that environmental pressures increase up to a certain point as income increases, after which they decrease.
 
-### **Description of each variable:**
+### 2. Data sets descriptions
+
+#### 2.1 Data cleaning
+
+In this step, we have cleaned the data by selecting the data from 1991 to 2018 to ensure that the results are not compromised by the age of the data. Additionally, we chose 14 variables for our analysis because these variables are highly relevant to the research question we are investigating. Lastly, we removed missing data, focusing our analysis on countries without missing data. The purpose of data cleaning is to improve data quality, enhance model performance, and increase the efficiency of analysis. It achieves these goals by removing or correcting errors and inconsistencies in the dataset, ensuring that the results of data analysis are more accurate and reliable.
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+here::i_am("DM-Project.Rproj")
+options(repos = c(CRAN = "http://cran.rstudio.com"))
+install.packages("forecast")
+library(here)
+library(vroom)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+```{r}
+owid <- vroom(here("owid-co2-data.csv"))
+```
+
+```{r}
+owid_filtered <- owid %>%
+  filter(year >= 1991, year <= 2018)
+
+owid_selected <- owid %>%
+  dplyr::select(country, year, population, gdp, co2, co2_per_capita, co2_per_gdp, co2_per_unit_energy, energy_per_capita, energy_per_gdp, methane, methane_per_capita, temperature_change_from_co2, trade_co2)
+```
+
+```{r}
+owid_selected_no_na <- owid_selected %>%
+  filter(
+    !is.na(country),
+    !is.na(year),
+    !is.na(population),
+    !is.na(gdp),
+    !is.na(co2),
+    !is.na(co2_per_capita),
+    !is.na(co2_per_gdp),
+    !is.na(co2_per_unit_energy),
+    !is.na(energy_per_capita),
+    !is.na(energy_per_gdp),
+    !is.na(methane),
+    !is.na(methane_per_capita),
+    !is.na(temperature_change_from_co2),
+    !is.na(trade_co2)
+  )
+```
+
+#### 2.2 Tables of basic information about the data file
+
+```{r}
+dimensions <- dim(owid_selected_no_na)
+
+descriptive_stats <- summary(owid_selected_no_na)
+
+cat("Rows:", dimensions[1], "\n")
+cat("Columns:", dimensions[2], "\n\n")
+print(descriptive_stats)
+```
+
+#### 2.3 Description of each variable
 
 **1. Country:** Geographic location.
 
@@ -62,76 +124,9 @@ The analysis of a hypothetical relationship between environmental degradation an
 
 **14. co2_per_unit_energy**: Annual CO2 emissions per unit energy (kg per kilowatt-hour) - Annual total emissions of carbon dioxide (CO2), excluding land-use change, measured in kilograms per kilowatt-hour of primary energy consumption.
 
-### **Data cleaning:**
+### 3. Lasso
 
-In this step, we have cleaned the data by selecting the data from 1991 to 2018 to ensure that the results are not compromised by the age of the data. Additionally, we chose 14 variables for our analysis because these variables are highly relevant to the research question we are investigating. Lastly, we removed missing data, focusing our analysis on countries without missing data. The purpose of data cleaning is to improve data quality, enhance model performance, and increase the efficiency of analysis. It achieves these goals by removing or correcting errors and inconsistencies in the dataset, ensuring that the results of data analysis are more accurate and reliable.
-
-```{r}
-here::i_am("DM-Project.Rproj")
-options(repos = c(CRAN = "http://cran.rstudio.com"))
-install.packages("forecast")
-library(here)
-library(vroom)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-```
-
-```{r}
-owid <- vroom(here("owid-co2-data.csv"))
-```
-
-```{r}
-owid_filtered <- owid %>%
-  filter(year >= 1991, year <= 2018)
-```
-
-```{r}
-owid_selected <- owid_filtered %>%
-  select(country, year, population, gdp, co2, co2_per_capita, co2_per_gdp,co2_per_unit_energy, energy_per_capita, energy_per_gdp, methane, methane_per_capita, temperature_change_from_co2, trade_co2)
-```
-
-```{r}
-owid_selected_no_na <- owid_selected %>%
-  filter(
-    !is.na(country),
-    !is.na(year),
-    !is.na(population),
-    !is.na(gdp),
-    !is.na(co2),
-    !is.na(co2_per_capita),
-    !is.na(co2_per_gdp),
-    !is.na(co2_per_unit_energy),
-    !is.na(energy_per_capita),
-    !is.na(energy_per_gdp),
-    !is.na(methane),
-    !is.na(methane_per_capita),
-    !is.na(temperature_change_from_co2),
-    !is.na(trade_co2)
-  )
-```
-
-### **Tables of basic information about the data file:**
-
-```{r}
-dimensions <- dim(owid_selected_no_na)
-
-descriptive_stats <- summary(owid_selected_no_na)
-
-cat("Rows:", dimensions[1], "\n")
-cat("Columns:", dimensions[2], "\n\n")
-print(descriptive_stats)
-```
-
-```{r}
-dimensions_2 <- dim(owid)
-cat("Rows:", dimensions_2[1], "\n")
-cat("Columns:", dimensions_2[2], "\n\n")
-```
-
-### Lasso
-
-#### 1.1 Establishment of Lasso Regression Model
+#### 3.1 Establishment of Lasso Regression Model
 
 Due to the numerous variables in this study, there is a risk of multicollinearity and overfitting. Therefore, the decision was made to use the Lasso regression method for variable selection and regression analysis. Lasso regression (Least Absolute Shrinkage and Selection Operator Regression) is a commonly used linear regression method. It reduces model complexity and the risk of overfitting by adding an L1 regularization term. Lasso regression originated in the field of statistics and is primarily used to address feature selection problems in high-dimensional data. Its prominent property is that by minimizing the objective function, certain coefficients in the regression equation can be reduced to zero, achieving the goal of variable selection. As a machine learning method, Lasso exhibits good predictive performance for the dependent variable.
 
@@ -139,14 +134,17 @@ Specifically, the principle of Lasso regression involves minimizing the sum of s
 
 In situations involving multiple variable selection, stepwise regression is a commonly used method in multiple linear regression due to its intuitiveness and ease of implementation. However, stepwise regression's drawback lies in its direct exclusion of variables, potentially discarding useful information, and its subjective nature in adding or removing variables. Additionally, stepwise regression is a discrete process, adding or removing one variable at a time, which may lead to significant differences in selected variables with minor changes in the data. Statistically, stepwise regression may face overfitting issues, as each addition or removal of a variable only considers the optimality of the current model without global optimality. In economics, stepwise regression may exclude economically significant variables as they could be overshadowed by other variables in the current model, resulting in the omission of crucial variables. In contrast, utilizing L1 norm regularization for variable selection has certain advantages. The Lasso method is an ordered, continuous variable selection process that does not rely on the least squares method but employs regularization penalties for variable selection.
 
-#### 1.2.Lasso Regression Results
+#### 3.2 Lasso Regression Results
 
-The Lasso selection results indicate that co2_per_unit_energy has a relatively small impact on the changes in energy structure and is thus ignored in the subsequent regression process. The coefficients for the Lasso regression results are presented in Table .
+The Lasso selection results indicate that several variables has a relatively small impact on the changes in energy structure and is thus ignored in the subsequent regression process. The coefficients for the Lasso regression results are presented in Table .
 
-```{r}
+```{r, message=FALSE, warning=FALSE, include=FALSE}
 ## Using Lasso Regression to select variables
 install.packages("glmnet")
 library(glmnet)
+```
+
+```{r}
 data <- owid_selected_no_na
 y <- data$co2
 x <- as.matrix(data[,c("gdp", "population", "co2_per_capita", "co2_per_gdp", "co2_per_unit_energy", "energy_per_capita", "energy_per_gdp", "methane", "methane_per_capita", "temperature_change_from_co2", "trade_co2")])
@@ -166,9 +164,9 @@ On the other hand, co2_per_gdp, methane, methane_per_capita, and trade_co2(co2 
 
 The negative impact of CO2 per GDP suggests that economies are becoming more carbon-efficient as they grow, potentially indicating a shift towards cleaner technologies and less carbon-intensive production methods. The inverse relationship with methane emissions implies a possible energy source shift from CO2-heavy fuels like coal to those emitting more methane, like natural gas. Although this reduces CO2 emissions, it doesn't necessarily translate to a net reduction in overall greenhouse gases. Additionally, the negative correlation of trade CO2 with domestic CO2 emissions points to the possibility of carbon leakage, where countries export carbon-intensive production, reducing their own emissions but not the global total. These trends highlight the complexity of environmental impact in economic growth and the importance of a holistic approach in climate policy, considering all greenhouse gases and global impacts.
 
-The results of the LASSO regression provide a simple and preliminary interpretation, with the primary outcome being variable selection. More detailed, robust, and precise results will be reflected in the subsequent sections.
+The results of the LASSO regression provide a simple and preliminary interpretation, with the primary outcome being variable selection. More detailed, robust, and precise results will be reflected in the subsequent sections. In order to ensure 10 variables, we only remove the variable with the least impact "co2_per_unit_energy".
 
-#### 1.3. Sensitivity Test
+#### 3.3. Sensitivity Test
 
 One of the disadvantages of Lasso regression is that in the presence of highly correlated independent variables, the coefficients may be unstable. And because Lasso regression penalizes too strongly, the correlation important may be lost. In this case, Elastic Net Regression can be considered for sensitivity analysis of Lasso regression by combining the effects of L1 and L2 regularization terms. Elastic Net Regression has both the feature selection ability of Lasso regression and the parameter contraction ability of ridge regression. Compared with stepwise regression, Lasso method has some advantages, but it still has strong constraints, and there will still be a situation that useful information will be eliminated directly when there are more variables. Elastic net regression has many better results in applications. For example, Fan and Li (2001) proposed that the elastic net has the Oracle property that Lasso does not have, i.e., it is more capable of retaining variables with this parameter not being zero.
 
@@ -187,9 +185,9 @@ print(coef(elastic_net_model))
 
 It can be found that the coefficients of the variables in the elastic net regression have the same sign as the coefficients of the variables in the Lasso regression, which indicate they represent the same economic effects. It's worth noting that the regularization result of elastic net regression is completely consistent with that of lasso, indicating that lasso does not run the risk of being over-penalized or under-penalized. As a result, LASSO regression is relatively reliable.
 
-### Econometric analysis
+### 4. Econometric analysis
 
-#### **A graphical representation of "CO2 emission" and "GDP" variable:**
+#### 4.1 The graphical representation of "CO2 emission" and "GDP" variable
 
 France's total annual CO2 emissions measured in million tonnes and France's GDP measured are shown in the graph below.
 
@@ -213,6 +211,8 @@ ggplot(france, aes(x = year, y = co2)) +
        y = "CO2 Emissions")
 ```
 
+#### 4.2 Environment Kuznets Curve test between CO2 emissions and GDP per capita
+
 Through the visual presentation of the picture, we can note that France's GDP has shown a significant year-on-year increase from 1991 to 2018 (except for the decline in GDP due to the effects of the financial crisis in 2008). However, France's CO2 emissions show a fluctuating rise until 2005 and a fluctuating fall after 2005. Is this phenomenon consistent with the Environment Kuznets Curve? We need to analyze it through a linear regression model.
 
 To determine whether France conforms to the Environmental Kuznets Curve (EKC) theory, we need to conduct an empirical analysis.The EKC hypothesizes that as the economy grows (usually expressed in terms of GDP per capita), environmental pollution (e.g., CO2 emissions) initially increases and then decreases as the economy grows further, forming an inverted U-shaped curve. 
@@ -231,7 +231,7 @@ We distinguish between cases to obtain the shape of the curve:
 4.  If beta1\>0, beta2\<0 and beta3=0, the relationship is quadratic. That is, we have the form of an inverted "U" shape and the CEK hypothesis is verified.
 5.  If beta1 =/ 0, beta2 = 0 and beta3=0, the relationship is linear.
 
-To perform this analysis in R, we can use a time-series data regression model to examine the relationship between GDP per capita and CO2 emissions. The main steps you will need include:
+To perform this analysis in R, we can use a time-series data regression model to examine the relationship between GDP per capita and CO2 emissions. The main steps we need include:
 
 \(1\) Screening and preparing the data.
 
@@ -243,7 +243,7 @@ The EKC is assumed to be non-linear, so we need to include the squared GDP per c
 
 \(3\) Time-series Data Modeling.
 
-Use a time-series data regression model (e.g., fixed or random effects) to estimate the relationship between CO2 emissions and GDP and its squared terms.
+Use a time-series data regression model to estimate the relationship between CO2 emissions and GDP and its squared terms.
 
 \(4\) Analyze Results: View the coefficients of GDP and its squared terms.
 
@@ -264,13 +264,15 @@ model_ts <- lm(co2 ~ gdp_percapita + gdp_percapita_squared, data = france_data)
 summary(model_ts)
 ```
 
-By regressing CO2 emissions, GDP per capita and squared GDP per capita, we arrive at a GDP per capita coefficient of 1.256e-01 and a coefficient on the squared GDP per capita term of -1.901e-06.
+By regressing CO2 emissions, GDP per capita and squared GDP per capita, we arrive at a positive coefficient on the GDP per capita term and a negative coefficient on the squared GDP per capita term.
 
 Positive GDP per capita Coefficient: indicates that in the early years, as GDP per capita increases, CO2 emissions or other indicators of environmental pollution also increase. This may reflect the increased demand for energy in the early stages of economic development, as well as the environmental impacts of industrialization and urbanization.
 
 Negative squared GDP per capita term coefficient.: indicates that after a certain level of economic development, CO2 emissions or other indicators of environmental pollution begin to decline as GDP per capita grows further. This may be due to higher income levels leading to greater awareness of environmental protection, more effective environmental regulations, technological advances, and a shift to cleaner energy sources.
 
-The regression results show that there is also an inverted U-shaped relationship between CO2 emission and GDP per capita. The estimated coefficients of the GDP per capita and squared GDP per capita parameter are both statistically significant at the 0.1% level.
+The regression results show that there is an inverted U-shaped relationship between CO2 emission and GDP per capita. The estimated coefficients of the GDP per capita parameter and squared GDP per capita parameter are both statistically significant at the 0.1% level.
+
+#### 4.3 The graphical representation of Environment Kuznets Curve
 
 ```{r}
 coefficients <- summary(model_ts)$coefficients
@@ -290,15 +292,17 @@ ggplot(france_data, aes(x = gdp_percapita, y = co2)) +
   geom_text(aes(x = gdp_percapita_turning_point, y = co2_turning_point, 
                 label = paste("(", round(gdp_percapita_turning_point, 1), 
                               ",", round(co2_turning_point, 1), ")", sep="")), 
-            vjust = -1, color = "darkred") +
+            vjust = -1, hjust = 1, color = "darkred") +  
+  expand_limits(y = co2_turning_point + 10) +  
   theme_minimal() +  
   labs(title = "CO2 vs GDP per capita and GDP per capita Squared",
        x = "GDP per capita",
        y = "CO2 Emissions")
-
 ```
 
-The representation of the relationship between CO2 emissions and GDP per capita that we have identified, based on time-series data for France, is a concave curve. Tt is therefore possible to obtain the inverted "U" Environmental Kuznets Curve. We find that the curve reverses only when the GDP per capita reaches US\$ 33036.67 in France. This estimate is economically significant: the relationship between CO2 emissions and GDP per capita reverses only when GDP per capita exceeds the critical level of US\$ 33036.67/capita; i.e., from then on, as GDP per capita increases, the degree of CO2 emissions decreases.
+The representation of the relationship between CO2 emissions and GDP per capita that we have identified, based on time-series data for France, is a concave curve. It is therefore possible to obtain the inverted "U" Environmental Kuznets Curve. We find that the curve reverses only when the GDP per capita reaches US\$ 33036.67 in France. This estimate is economically significant: the relationship between CO2 emissions and GDP per capita reverses only when GDP per capita exceeds the critical level of US\$ 33036.67/capita; i.e., from then on, as GDP per capita increases, the degree of CO2 emissions decreases.
+
+#### 4.4 Discussion of other countries and comparison with France
 
 ```{r}
 Euro <- owid_selected_no_na %>%
@@ -311,7 +315,8 @@ ggplot(Euro, aes(x = year, y = gdp, color = country)) +
        x = "Year",
        y = "GDP") +
   theme(text = element_text(size = 12),  
-        legend.position = "bottom")
+        legend.position = "bottom",
+        plot.title = element_text(size = 12))
 
 Euro <- owid_selected_no_na %>%
   filter(country %in% c("France","Germany","Italy", "Spain", "United Kingdom"))
@@ -323,7 +328,8 @@ ggplot(Euro, aes(x = year, y = co2, color = country)) +
        x = "Year",
        y = "CO2 Emissions (metric tons)") +
   theme(text = element_text(size = 12),  
-        legend.position = "bottom")
+        legend.position = "bottom",
+        plot.title = element_text(size = 12))
 ```
 
 Now, let us put the perspective with some of the developed countries in Europe, and through the visual presentation of the pictures, it can be concluded that their situation is similar to that of France.
@@ -339,7 +345,8 @@ ggplot(Africa, aes(x = year, y = gdp, color = country)) +
        x = "Year",
        y = "GDP") +
   theme(text = element_text(size = 12),  
-        legend.position = "bottom")
+        legend.position = "bottom",
+        plot.title = element_text(size = 12))
 
 Africa <- owid_selected_no_na %>%
   filter(country %in% c("South Africa","Egypt", "Nigeria", "Morocco", "Algeria"))
@@ -351,7 +358,8 @@ ggplot(Africa, aes(x = year, y = co2, color = country)) +
        x = "Year",
        y = "CO2 Emissions (metric tons)") +
   theme(text = element_text(size = 12),  
-        legend.position = "bottom")
+        legend.position = "bottom",
+        plot.title = element_text(size = 12))
 ```
 
 The situation is markedly different if we look at some developing countries in Africa, where their state of significant year-on-year incremental increases in GDP from 1991 to 2018 (except for the drop in GDP due to the effects of the 2008 financial crisis) has been accompanied by a fluctuating rise in their CO2 emissions.
@@ -367,7 +375,8 @@ ggplot(Main, aes(x = year, y = gdp, color = country)) +
        x = "Year",
        y = "GDP") +
   theme(text = element_text(size = 12),  
-        legend.position = "bottom")
+        legend.position = "bottom",
+        plot.title = element_text(size = 12))
 
 Main <- owid_selected_no_na %>%
   filter(country %in% c("China","United States"))
@@ -379,20 +388,21 @@ ggplot(Main, aes(x = year, y = co2, color = country)) +
        x = "Year",
        y = "CO2 Emissions (metric tons)") +
   theme(text = element_text(size = 12),  
-        legend.position = "bottom")
+        legend.position = "bottom",
+        plot.title = element_text(size = 12))
 ```
 
 So what about the world's top two economies (the United States and China)? Through the visual presentation of the images, we can note that China's GDP has grown significantly between 1991 and 2018 and seems to be unaffected by the 2008 financial crisis (which seems to be related to the country's economic system), while at the same time, China's CO2 emissions have grown rapidly year after year. The GDP of the United States has shown a yearly increase from 1991 to 2018 (except for the decline in GDP due to the impact of the 2008 financial crisis), but the growth has tended to slow down, however, the CO2 emissions of the United States, similar to most of the developed countries such as France, peaked in 2005 and has shown a fluctuating decline since then. Can we say that the U.S. has initially completed its energy transition, while China seems to have a long way to go in terms of energy conservation and emission reduction? These elements need to be analyzed at a deeper level.
 
-**Some limitations on the environmental Kuznets curve hypothesis:**
+#### 4.5 Some limitations on the environmental Kuznets curve hypothesis
 
-The environmental Kuznets curve has many limitations. First, the curve is limited to the relationship between a specific pollutant (e.g. CO2 emissions) and economic development, rather than the relationship between environmental quality and economic development per se. For example, as the economy grows, the use of coal decreases while that of oil increases, corresponding to a decrease in sulphones and an increase in NOx. Second, the literature has revealed that generally only environmental problems with a direct impact on human health tend to improve steadily with economic growth and therefore exhibit an inverted "U" relationship with income. In contrast, evidence of the environmental Kuznets curve is not found for air pollutants that have minimal direct impact on human health. The environmental Kuznets curve hypothesis is therefore only one of the possible results. This inverted "U" shaped curve may be only part of an N shaped curve as it is difficult to maintain the effectiveness of innovation that has improved the quality of the environment. Many existing studies show that the relationship between certain pollutants (e.g. industrial solid waste) and economic development exhibits an N-shaped relationship. This implies that there is a second inflection point beyond which economic development can still lead to environmental degradation. Third, environmental quality is not easy to measure accurately, and a single environmental indicator cannot express its overall level of degradation. Therefore, an environmental quality index, which might be a better measure, should be developed and used to examine the environmental Kuznets curve hypothesis. In terms of data quality and measurement methods, environmental issues have only gained attention in recent decades. Monitoring of environmental statistics did not begin until the late 1970s, or even later, which explains the absence of more complete historical data on the evolution of pollution. For cross-sectional data from multiple countries (or regions), unavoidable biases may arise in the measurement analysis process due to statistical calibration issues or incomplete data. A study is complete if these results can be generalized and used to anticipate future problems and therefore help to solve them appropriately. It is now a question of asking whether the hypothesis of the Kuznets curve can be used to predict the evolution of the quality of the environment based on growth.
+The environmental Kuznets curve has many limitations. First, the curve is limited to the relationship between a specific pollutant (e.g. CO2 emissions) and economic development, rather than the relationship between environmental quality and economic development per se. For example, as the economy grows, the use of coal decreases while that of oil increases, corresponding to a decrease in sulphones and an increase in NOx. Second, the literature has revealed that generally only environmental problems with a direct impact on human health tend to improve steadily with economic growth and therefore exhibit an inverted "U" relationship with income. In contrast, evidence of the environmental Kuznets curve is not found for air pollutants that have minimal direct impact on human health. The environmental Kuznets curve hypothesis is therefore only one of the possible results. This inverted "U" shaped curve may be only part of an N shaped curve as it is difficult to maintain the effectiveness of innovation that has improved the quality of the environment. Many existing studies show that the relationship between certain pollutants (e.g. industrial solid waste) and economic development exhibits an N-shaped relationship. This implies that there is a second inflection point beyond which economic development can still lead to environmental degradation. Third, environmental quality is not easy to measure accurately, and a single environmental indicator cannot express its overall level of degradation. Therefore, an environmental quality index, which might be a better measure, should be developed and used to examine the environmental Kuznets curve hypothesis. In terms of data quality and measurement methods, environmental issues have only gained attention in recent decades. Monitoring of environmental statistics did not begin until the late 1970s, or even later, which explains the absence of more complete historical data on the evolution of pollution. For time-series data from multiple countries (or regions), unavoidable biases may arise in the measurement analysis process due to statistical calibration issues or incomplete data. A study is complete if these results can be generalized and used to anticipate future problems and therefore help to solve them appropriately. It is now a question of asking whether the hypothesis of the Kuznets curve can be used to predict the evolution of the quality of the environment based on growth.
 
-### VAR
+### 5. VAR
 
 In order to predict the model and analyze its dynamic effects, we apply the VAR model for regression. Since VAR model is applied to time series, we choose France as a representative to analyze. Three variables are chose for regression: co2, population and gdp. Firstly, We conducted stationarity tests on these three variables to ensure that the regression is not influenced by time trends. However, the results do not completely reject the presence of a unit root, suggesting that the data might be non-stationary.
 
-```{r}
+```{r, message=FALSE, warning=FALSE, include=FALSE}
 install.packages("vars")
 install.packages("urca")
 install.packages("tsDyn")
@@ -449,19 +459,21 @@ The negative impact of population shocks on GDP could be indicative of resource 
 
 The negative response of the population to a GDP shock might suggest that as GDP grows, there could be demographic shifts such as reduced birth rates, which are a common phenomenon in developed economies as they grow and individuals choose to have fewer children. However, given the wide confidence intervals, we cannot make a definitive conclusion about the nature of this relationship.
 
-### Conlusion
+### 6. Conclusion
 
-Our study consisted of analyzing the relationship between environmental indicators and economic growth. We tested the Environmental Kuznets Curve hypothesis, which suggests that in the early stages of development, economic impacts increase nvironmental pressures until a certain level of welfare is reached. Once this level is exceeded, the natural environment will improve if development continues, which may imply that the best way to improve environmental quality is to encourage economic growth. Our analysis uses environmental indicators to observe this relationship: CO2 emissions. A linear regression model of CO2 emissions versus GDP per capita suggests that the Environmental Kuznets Curve hypothesis is possible.
+Our study consisted of analyzing the relationship between environmental indicators and economic growth. We tested the Environmental Kuznets Curve hypothesis, which suggests that in the early stages of development, economic impacts increase environmental pressures until a certain level of welfare is reached. Once this level is exceeded, the natural environment will improve if development continues, which may imply that the best way to improve environmental quality is to encourage economic growth. Our analysis uses environmental indicators to observe this relationship: CO2 emissions. A linear regression model of CO2 emissions versus GDP per capita suggests that the Environmental Kuznets Curve hypothesis is possible.
 
 The results obtained through our analysis are biased. Among other things, our current knowledge in econometrics and statistics allowed us to detect selection bias, omitted variables and multicollinearity. Nevertheless, the results obtained allow us to affirm that the environmental Kuznets curve does not fully reveal the relationship between the quality of the environment and economic growth. In sum, the environmental Kuznets curve curve is of limited relevance as a guide for developing policies for environmental protections or growth. Unlike the context of the 1970s, environmental protection issues are now at the heart of concerns, particularly with the sustainable development objectives. Research to improve the environmental Kuznets curve is imperative so that it can help answer these questions.
 
 In addition, we use the VAR model to analyze France, and we select three variables for regression: co2, population and gdp. The results of the analysis suggest that the unstable response of CO2 to GDP shocks may indicate that economic growth leads to fluctuations in environmental outcomes. During economic expansions, CO2 emissions may increase due to increased production and energy consumption, while during economic recessions emissions may decrease. However, the wide confidence intervals indicate a high degree of uncertainty about this relationship. Negative demographic responses to GDP shocks may indicate that as GDP increases, demographic changes may occur, such as declining birth rates, a common phenomenon in advanced economies as economies grow and individuals choose to have fewer children. However, given the wide confidence intervals, we cannot draw firm conclusions about the nature of this relationship.
 
-### **A link to the github project:**
+### 7. Annex
+
+#### 7.1 A link to the github project
 
 https://github.com/hyf19980724/DM-Project.git
 
-### **Links to the sources:**
+#### 7.2 Links to the sources
 
 A dataset describing the global warming response to national emissions CO2, CH4 and N2O from fossil and land use sources during 1851-2021. 
 
@@ -495,7 +507,7 @@ Population：
 
 [[https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population]{.underline}](https://en.wikipedia.org/wiki/List_of_countries_and_dependencies_by_population)
 
-### **Description of Sources:**
+#### 7.3 Description of Sources
 
 GDP: Gross Domestic Product (GDP) is the core dependent variable representing the economic development level of a country. We sourced GDP data for various countries across different decades from the University of Groningen and the World Bank databases. To maintain consistency, we converted all GDP figures into U.S. dollars, using the U.S. GDP data from 2015 as a benchmark. This approach facilitates cross-country comparisons and temporal analysis.
 
@@ -510,3 +522,27 @@ Energy Consumption Metrics: 'energy_per_capita' and 'energy_per_gdp' data were s
 Climate Change and Trade Variables: 'temperature_change_from_co2' and 'trade_co2' data were also sourced from the EIA and Zenodo databases. The increase in temperature due to CO2 emissions significantly impacts economic activities. Moreover, trade activities, being a vital part of the economy---especially in the context of international economic exchanges---can be further analyzed for robustness checks. These variables allow us to understand the broader impacts of environmental change on global trade and economic dynamics.
 
 This expanded and refined data construction provides a solid foundation for analyzing the intricate relationships between economic growth, population dynamics, environmental pollution, and energy consumption. It also allows for a nuanced understanding of how these factors interplay at both the national and global levels.
+
+### 8. References
+
+-   Xin-gang Z, Fan L. Spatial distribution characteristics and convergence of China's regional energy intensity: An industrial transfer perspective\[J\]. Journal of cleaner production, 2019, 233: 903-917.
+
+-   Çevresel Kuznets Eğrisi: KEİÖ Ülkeleri Uygulaması Şenay SARAÇ1, Aykut YAĞLIKARA, \"Environmental Kuznets Curve: The Evidence from BSEC Countries\"
+
+-   Mishra, Mukesh Kumar, \"The Kuznets Curve for the Sustainable Environment and Economic Growth\"
+
+-   Jordi Roca & Emilio Padilla & Mariona Farré & Vittorio Galletto, 2001. "Economic growth and atmospheric pollution in Spain: discussing the environmental Kuznets curve by hypothesis," Working Papers wp0101, Department of Applied Economics at Universitat Autonoma of Barcelona.
+
+-   Al-Mulali, Usama & Saboori, Behnaz & Ozturk, Ilhan, 2015. "Investigating the environmental Kuznets curve hypothesis in Vietnam," Energy Policy, Elsevier, vol. 76(C), pages 123-131.
+
+-   Simon Kuznets, \"The American Economic Review\". Volume XLV, MARCH 1955, NUMBER 1.
+
+-   Kleiber, Christian, and Achim Zeileis. 2020. AER: Applied Econometrics with R (version 1.2-9).
+
+-   Multiplicative interaction models (Wright 1976; Friedrich 1982; Aiken and West 1991)
+
+-   Richard S.J. Tol, 2020. "Environmental Kuznets curve," Video Library 2049, Department of Economics, University of Sussex Business School.
+
+-   Simone Borghesi, 1999. "The Environmental Kuznets Curve: a Survey of the Literature," Working Papers 1999.85, Fondazione Eni Enrico Mattei.
+
+-   Wang, Yi-Chia, 2013. "Functional sensitivity of testing the environmental Kuznets curve hypothesis," Resource and Energy Economics, Elsevier, vol. 35(4), pages 451-466.
