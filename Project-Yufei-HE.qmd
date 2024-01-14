@@ -300,7 +300,7 @@ ggplot(france_data, aes(x = gdp_percapita, y = co2)) +
        y = "CO2 Emissions")
 ```
 
-The representation of the relationship between CO2 emissions and GDP per capita that we have identified, based on time-series data for France, is a concave curve. It is therefore possible to obtain the inverted "U" Environmental Kuznets Curve. We find that the curve reverses only when the GDP per capita reaches US\$ 33036.67 in France. This estimate is economically significant: the relationship between CO2 emissions and GDP per capita reverses only when GDP per capita exceeds the critical level of US\$ 33036.67/capita; i.e., from then on, as GDP per capita increases, the degree of CO2 emissions decreases.
+The representation of the relationship between CO2 emissions and GDP per capita that we have identified, based on time-series data for France, is a concave curve. It is therefore possible to obtain the inverted "U" Environmental Kuznets Curve. We find that the curve reverses only when the GDP per capita reaches US\$ 32971 in France. This estimate is economically significant: the relationship between CO2 emissions and GDP per capita reverses only when GDP per capita exceeds the critical level of US\$ 32971 per capita; i.e., from then on, as GDP per capita increases, the degree of CO2 emissions decreases.
 
 #### 4.4 Discussion of other countries and comparison with France
 
@@ -527,15 +527,15 @@ This expanded and refined data construction provides a solid foundation for anal
 
 -   Xin-gang Z, Fan L. Spatial distribution characteristics and convergence of China's regional energy intensity: An industrial transfer perspective\[J\]. Journal of cleaner production, 2019, 233: 903-917.
 
--   Çevresel Kuznets Eğrisi: KEİÖ Ülkeleri Uygulaması Şenay SARAÇ1, Aykut YAĞLIKARA, \"Environmental Kuznets Curve: The Evidence from BSEC Countries\"
+-   Çevresel Kuznets Eğrisi: KEİÖ Ülkeleri Uygulaması Şenay SARAÇ1, Aykut YAĞLIKARA, "Environmental Kuznets Curve: The Evidence from BSEC Countries"
 
--   Mishra, Mukesh Kumar, \"The Kuznets Curve for the Sustainable Environment and Economic Growth\"
+-   Mishra, Mukesh Kumar, "The Kuznets Curve for the Sustainable Environment and Economic Growth"
 
 -   Jordi Roca & Emilio Padilla & Mariona Farré & Vittorio Galletto, 2001. "Economic growth and atmospheric pollution in Spain: discussing the environmental Kuznets curve by hypothesis," Working Papers wp0101, Department of Applied Economics at Universitat Autonoma of Barcelona.
 
 -   Al-Mulali, Usama & Saboori, Behnaz & Ozturk, Ilhan, 2015. "Investigating the environmental Kuznets curve hypothesis in Vietnam," Energy Policy, Elsevier, vol. 76(C), pages 123-131.
 
--   Simon Kuznets, \"The American Economic Review\". Volume XLV, MARCH 1955, NUMBER 1.
+-   Simon Kuznets, "The American Economic Review". Volume XLV, MARCH 1955, NUMBER 1.
 
 -   Kleiber, Christian, and Achim Zeileis. 2020. AER: Applied Econometrics with R (version 1.2-9).
 
