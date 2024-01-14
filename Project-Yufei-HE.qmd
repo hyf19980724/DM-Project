@@ -1,6 +1,6 @@
 ---
 title: "DM-Project"
-author: "Yufei HE"
+author: "Yufei HE&Xuanzheng LI"
 format: pdf
 editor: visual
 knitr:
@@ -133,7 +133,7 @@ cat("Columns:", dimensions_2[2], "\n\n")
 
 #### 1.1 Establishment of Lasso Regression Model
 
-Due to the numerous variables in this study and the use of short-panel data, there is a risk of multicollinearity and overfitting. Therefore, the decision was made to use the Lasso regression method for variable selection and regression analysis. Lasso regression (Least Absolute Shrinkage and Selection Operator Regression) is a commonly used linear regression method. It reduces model complexity and the risk of overfitting by adding an L1 regularization term. Lasso regression originated in the field of statistics and is primarily used to address feature selection problems in high-dimensional data. Its prominent property is that by minimizing the objective function, certain coefficients in the regression equation can be reduced to zero, achieving the goal of variable selection. As a machine learning method, Lasso exhibits good predictive performance for the dependent variable.
+Due to the numerous variables in this study, there is a risk of multicollinearity and overfitting. Therefore, the decision was made to use the Lasso regression method for variable selection and regression analysis. Lasso regression (Least Absolute Shrinkage and Selection Operator Regression) is a commonly used linear regression method. It reduces model complexity and the risk of overfitting by adding an L1 regularization term. Lasso regression originated in the field of statistics and is primarily used to address feature selection problems in high-dimensional data. Its prominent property is that by minimizing the objective function, certain coefficients in the regression equation can be reduced to zero, achieving the goal of variable selection. As a machine learning method, Lasso exhibits good predictive performance for the dependent variable.
 
 Specifically, the principle of Lasso regression involves minimizing the sum of squared errors while introducing an L1 regularization term to constrain the magnitude of regression coefficients. This leads to some coefficients becoming zero, achieving feature selection and dimensionality reduction. The L1 regularization term imposes a greater penalty on small coefficients and a relatively smaller penalty on large coefficients. Therefore, it compresses the coefficients of variables contributing less to the predictive results, while retaining variables with a significant impact on the results. Compared to Ridge Regression, which employs L2 regularization, Lasso can yield sparse solutions, setting some variable coefficients to zero and thereby enhancing the model's interpretability.
 
@@ -185,32 +185,7 @@ elastic_net_model <- glmnet(x, y, alpha = 0.5, lambda = elastic_best_lambda)
 print(coef(elastic_net_model))
 ```
 
-It can be found that the coefficients of the variables in the elastic net regression have the same sign as the coefficients of the variables in the Lasso regression, and they represent the same economic effects. However, this method screens out many variables, particularly control variables that are negatively correlated with the dependent variable. If the selection results of the elastic net are chosen, subsequent regression and other analyses will become unreliable. This indicates an excessive sensitivity of the elastic net method.
-
-Compared to elastic net regression, LASSO regression with a regularization coefficient of 1 does not lose variables due to excessive sensitivity. This indicates that LASSO regression is relatively reliable.
-
-The traditional mean regression of ols carving out the whole does not deal well with idiosyncrasies and takes into account the full picture of the conditional distribution. Quantile Regression is used here to minimize these shortcomings. The basic idea of quantile regression is to split the data into multiple quantile points according to the dependent variable, and study the regression effect of different quantile points, which is essentially a weighted regression method. In addition, quantile regression estimation is estimated by the weighted lest absolute deviation and (weighted lest absolute deviation (WLAD)) method, which is usually not affected by outlier points, and the results are more robust.
-
-We select  25%, 50%, 75% of the quartiles for regression. The results are shown in Table.
-
-```{r}
-install.packages("quantreg")
-install.packages("Matrix")
-##Quantile Regression
-library(quantreg)
-taus <- c(0.25, 0.5, 0.75)
-qr_models <- lapply(taus, function(tau) {
-  rq(co2 ~ ., data = data, tau = tau)
-})
-
-lapply(qr_models, summary)
-```
-
-(Uncertain yet). As can be seen from the table, co2_per_capital has a more significant effect and larger regression coefficients in areas with higher co2 emissions. This may be due to the fact that in areas with lower emission levels, CO2 emissions may be more influenced by factors such as infrastructure and industrial structure, whereas in high emission areas, where industrial activities are more intensive, the effect is greater.
-
-Methane has a larger absolute value of the coefficient and a positive coefficient on the 25% and 75% segments. methane_per_capital has a larger absolute value of the coefficient and a negative coefficient on the 25% and 75% segments.
-
-The effect of methane on CO2 emissions can be explained in a manner similar to the Kuznets curve. Energy production and agricultural activities emit large amounts of methane, while emitting carbon dioxide. Areas with lower CO2 emissions have lower levels of industrialization and more agricultural activities, and therefore have a significant impact; similarly, areas with higher CO2 emissions have more industrial activities and greater energy development and consumption.
+It can be found that the coefficients of the variables in the elastic net regression have the same sign as the coefficients of the variables in the Lasso regression, which indicate they represent the same economic effects. It's worth noting that the regularization result of elastic net regression is completely consistent with that of lasso, indicating that lasso does not run the risk of being over-penalized or under-penalized. As a result, LASSO regression is relatively reliable.
 
 ### Econometric analysis
 
@@ -472,3 +447,46 @@ Energy Consumption Metrics: 'energy_per_capita' and 'energy_per_gdp' data were s
 Climate Change and Trade Variables: 'temperature_change_from_co2' and 'trade_co2' data were also sourced from the EIA and Zenodo databases. The increase in temperature due to CO2 emissions significantly impacts economic activities. Moreover, trade activities, being a vital part of the economy---especially in the context of international economic exchanges---can be further analyzed for robustness checks. These variables allow us to understand the broader impacts of environmental change on global trade and economic dynamics.
 
 This expanded and refined data construction provides a solid foundation for analyzing the intricate relationships between economic growth, population dynamics, environmental pollution, and energy consumption. It also allows for a nuanced understanding of how these factors interplay at both the national and global levels.
+
+```{r}
+install.packages("vars")
+install.packages("urca")
+install.packages("tsDyn") 
+library(vars)
+library(urca)
+library(tsDyn)
+
+```
+
+```{r}
+## 
+data_three_variables <- owid_selected_no_na[c("country", "co2", "population", "gdp")]
+data_selected <- filter(data_three_variables, country == "France")
+
+## 
+summary(ur.df(data_selected$co2, type = "trend", lags = 1))
+summary(ur.df(data_selected$population, type = "trend", lags = 1))
+summary(ur.df(data_selected$gdp, type = "trend", lags = 1))
+
+## 
+var_select <- VARselect(data_selected[, c("co2", "population", "gdp")], lag.max = 10, type = "both")
+print(var_select$selection)
+
+## VAR
+var_model <- VAR(data_selected[, c("co2", "population", "gdp")], p = 5, type = "both")
+
+## IRF
+irf_1 <- irf(var_model, impulse = "co2", response = "gdp", n.ahead = 10)
+plot(irf_1)
+irf_2 <- irf(var_model, impulse = "gdp", response = "co2", n.ahead = 10)
+plot(irf_2)
+irf_3 <- irf(var_model, impulse = "population", response = "gdp", n.ahead = 10)
+plot(irf_3)
+irf_4 <- irf(var_model, impulse = "gdp", response = "population", n.ahead = 10)
+plot(irf_4)
+
+## 
+fevd_var <- fevd(var_model, n.ahead = 10)
+print(fevd_var)
+
+```
