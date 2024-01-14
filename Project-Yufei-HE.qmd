@@ -129,6 +129,89 @@ cat("Rows:", dimensions_2[1], "\n")
 cat("Columns:", dimensions_2[2], "\n\n")
 ```
 
+### Lasso
+
+#### 1.1 Establishment of Lasso Regression Model
+
+Due to the numerous variables in this study and the use of short-panel data, there is a risk of multicollinearity and overfitting. Therefore, the decision was made to use the Lasso regression method for variable selection and regression analysis. Lasso regression (Least Absolute Shrinkage and Selection Operator Regression) is a commonly used linear regression method. It reduces model complexity and the risk of overfitting by adding an L1 regularization term. Lasso regression originated in the field of statistics and is primarily used to address feature selection problems in high-dimensional data. Its prominent property is that by minimizing the objective function, certain coefficients in the regression equation can be reduced to zero, achieving the goal of variable selection. As a machine learning method, Lasso exhibits good predictive performance for the dependent variable.
+
+Specifically, the principle of Lasso regression involves minimizing the sum of squared errors while introducing an L1 regularization term to constrain the magnitude of regression coefficients. This leads to some coefficients becoming zero, achieving feature selection and dimensionality reduction. The L1 regularization term imposes a greater penalty on small coefficients and a relatively smaller penalty on large coefficients. Therefore, it compresses the coefficients of variables contributing less to the predictive results, while retaining variables with a significant impact on the results. Compared to Ridge Regression, which employs L2 regularization, Lasso can yield sparse solutions, setting some variable coefficients to zero and thereby enhancing the model's interpretability.
+
+In situations involving multiple variable selection, stepwise regression is a commonly used method in multiple linear regression due to its intuitiveness and ease of implementation. However, stepwise regression's drawback lies in its direct exclusion of variables, potentially discarding useful information, and its subjective nature in adding or removing variables. Additionally, stepwise regression is a discrete process, adding or removing one variable at a time, which may lead to significant differences in selected variables with minor changes in the data. Statistically, stepwise regression may face overfitting issues, as each addition or removal of a variable only considers the optimality of the current model without global optimality. In economics, stepwise regression may exclude economically significant variables as they could be overshadowed by other variables in the current model, resulting in the omission of crucial variables. In contrast, utilizing L1 norm regularization for variable selection has certain advantages. The Lasso method is an ordered, continuous variable selection process that does not rely on the least squares method but employs regularization penalties for variable selection.
+
+#### 1.2.Lasso Regression Results
+
+The Lasso selection results indicate that co2_per_unit_energy has a relatively small impact on the changes in energy structure and is thus ignored in the subsequent regression process. The coefficients for the Lasso regression results are presented in Table .
+
+```{r}
+## Using Lasso Regression to select variables
+install.packages("glmnet")
+library(glmnet)
+data <- owid_selected_no_na
+y <- data$co2
+x <- as.matrix(data[,c("gdp", "population", "co2_per_capita", "co2_per_gdp", "co2_per_unit_energy", "energy_per_capita", "energy_per_gdp", "methane", "methane_per_capita", "temperature_change_from_co2", "trade_co2")])
+cv.out <- cv.glmnet(x, y, alpha = 1)
+best_lambda <- cv.out$lambda.min
+print(best_lambda)
+plot(cv.out)
+lasso_model <- glmnet(x, y, alpha = 1, lambda = best_lambda)
+print(coef(lasso_model))
+```
+
+A preliminary interpretation of the Lasso regression results is as follows: the economic level (gdp), population, co2_per_capita, energy_per_capita, energy_per_gdp and temperature_change_from_co2 all have positive effects on changes in co2 emission.
+
+A positive correlation between GDP and CO2 emissions suggests that economic development often comes at the cost of higher emissions, reflecting the reliance on fossil fuels in industrial processes. Population growth exacerbates this trend, as a larger population base leads to greater energy consumption and higher emissions. This is further reinforced by the positive association of per capita CO2 and energy consumption with overall emissions, indicating that individual consumption patterns, particularly in energy-intensive lifestyles, play a significant role. Additionally, the link between energy intensity and CO2 emissions highlights the dependency of economies on energy, especially fossil fuels. The feedback loop created by temperature changes due to CO2 further intensifies emissions, as activities contributing to global warming increase. This intricate web of economic and environmental factors underscores the challenges in achieving sustainable development and the need for targeted policies to mitigate greenhouse gas emissions.
+
+On the other hand, co2_per_gdp, methane, methane_per_capita, and trade_co2(co2 embedded in trade) have inhibitory effects on changes in co2 emission.
+
+The negative impact of CO2 per GDP suggests that economies are becoming more carbon-efficient as they grow, potentially indicating a shift towards cleaner technologies and less carbon-intensive production methods. The inverse relationship with methane emissions implies a possible energy source shift from CO2-heavy fuels like coal to those emitting more methane, like natural gas. Although this reduces CO2 emissions, it doesn't necessarily translate to a net reduction in overall greenhouse gases. Additionally, the negative correlation of trade CO2 with domestic CO2 emissions points to the possibility of carbon leakage, where countries export carbon-intensive production, reducing their own emissions but not the global total. These trends highlight the complexity of environmental impact in economic growth and the importance of a holistic approach in climate policy, considering all greenhouse gases and global impacts.
+
+The results of the LASSO regression provide a simple and preliminary interpretation, with the primary outcome being variable selection. More detailed, robust, and precise results will be reflected in the subsequent sections.
+
+#### 1.3. Sensitivity Test
+
+One of the disadvantages of Lasso regression is that in the presence of highly correlated independent variables, the coefficients may be unstable. And because Lasso regression penalizes too strongly, the correlation important may be lost. In this case, Elastic Net Regression can be considered for sensitivity analysis of Lasso regression by combining the effects of L1 and L2 regularization terms. Elastic Net Regression has both the feature selection ability of Lasso regression and the parameter contraction ability of ridge regression. Compared with stepwise regression, Lasso method has some advantages, but it still has strong constraints, and there will still be a situation that useful information will be eliminated directly when there are more variables. Elastic net regression has many better results in applications. For example, Fan and Li (2001) proposed that the elastic net has the Oracle property that Lasso does not have, i.e., it is more capable of retaining variables with this parameter not being zero.
+
+In this paper, we use elastic net regression and square root Lasso to carry out sensitivity tests, and the results are shown in Table.
+
+```{r}
+## Elastic Net 
+data <- owid_selected_no_na
+y <- data$co2
+x <- as.matrix(data[,c("gdp", "population", "co2_per_capita", "co2_per_gdp", "co2_per_unit_energy", "energy_per_capita", "energy_per_gdp", "methane", "methane_per_capita", "temperature_change_from_co2", "trade_co2")])
+cv.out <- cv.glmnet(x, y, alpha = 0.5)
+elastic_best_lambda <- cv.out$lambda.min
+elastic_net_model <- glmnet(x, y, alpha = 0.5, lambda = elastic_best_lambda)
+print(coef(elastic_net_model))
+```
+
+It can be found that the coefficients of the variables in the elastic net regression have the same sign as the coefficients of the variables in the Lasso regression, and they represent the same economic effects. However, this method screens out many variables, particularly control variables that are negatively correlated with the dependent variable. If the selection results of the elastic net are chosen, subsequent regression and other analyses will become unreliable. This indicates an excessive sensitivity of the elastic net method.
+
+Compared to elastic net regression, LASSO regression with a regularization coefficient of 1 does not lose variables due to excessive sensitivity. This indicates that LASSO regression is relatively reliable.
+
+The traditional mean regression of ols carving out the whole does not deal well with idiosyncrasies and takes into account the full picture of the conditional distribution. Quantile Regression is used here to minimize these shortcomings. The basic idea of quantile regression is to split the data into multiple quantile points according to the dependent variable, and study the regression effect of different quantile points, which is essentially a weighted regression method. In addition, quantile regression estimation is estimated by the weighted lest absolute deviation and (weighted lest absolute deviation (WLAD)) method, which is usually not affected by outlier points, and the results are more robust.
+
+We select  25%, 50%, 75% of the quartiles for regression. The results are shown in Table.
+
+```{r}
+install.packages("quantreg")
+install.packages("Matrix")
+##Quantile Regression
+library(quantreg)
+taus <- c(0.25, 0.5, 0.75)
+qr_models <- lapply(taus, function(tau) {
+  rq(co2 ~ ., data = data, tau = tau)
+})
+
+lapply(qr_models, summary)
+```
+
+(Uncertain yet). As can be seen from the table, co2_per_capital has a more significant effect and larger regression coefficients in areas with higher co2 emissions. This may be due to the fact that in areas with lower emission levels, CO2 emissions may be more influenced by factors such as infrastructure and industrial structure, whereas in high emission areas, where industrial activities are more intensive, the effect is greater.
+
+Methane has a larger absolute value of the coefficient and a positive coefficient on the 25% and 75% segments. methane_per_capital has a larger absolute value of the coefficient and a negative coefficient on the 25% and 75% segments.
+
+The effect of methane on CO2 emissions can be explained in a manner similar to the Kuznets curve. Energy production and agricultural activities emit large amounts of methane, while emitting carbon dioxide. Areas with lower CO2 emissions have lower levels of industrialization and more agricultural activities, and therefore have a significant impact; similarly, areas with higher CO2 emissions have more industrial activities and greater energy development and consumption.
+
 ### Econometric analysis
 
 #### **A graphical representation of "CO2 emission" and "GDP" variable:**
