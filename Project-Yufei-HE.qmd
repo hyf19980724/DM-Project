@@ -388,11 +388,74 @@ So what about the world's top two economies (the United States and China)? Throu
 
 The environmental Kuznets curve has many limitations. First, the curve is limited to the relationship between a specific pollutant (e.g. CO2 emissions) and economic development, rather than the relationship between environmental quality and economic development per se. For example, as the economy grows, the use of coal decreases while that of oil increases, corresponding to a decrease in sulphones and an increase in NOx. Second, the literature has revealed that generally only environmental problems with a direct impact on human health tend to improve steadily with economic growth and therefore exhibit an inverted "U" relationship with income. In contrast, evidence of the environmental Kuznets curve is not found for air pollutants that have minimal direct impact on human health. The environmental Kuznets curve hypothesis is therefore only one of the possible results. This inverted "U" shaped curve may be only part of an N shaped curve as it is difficult to maintain the effectiveness of innovation that has improved the quality of the environment. Many existing studies show that the relationship between certain pollutants (e.g. industrial solid waste) and economic development exhibits an N-shaped relationship. This implies that there is a second inflection point beyond which economic development can still lead to environmental degradation. Third, environmental quality is not easy to measure accurately, and a single environmental indicator cannot express its overall level of degradation. Therefore, an environmental quality index, which might be a better measure, should be developed and used to examine the environmental Kuznets curve hypothesis. In terms of data quality and measurement methods, environmental issues have only gained attention in recent decades. Monitoring of environmental statistics did not begin until the late 1970s, or even later, which explains the absence of more complete historical data on the evolution of pollution. For cross-sectional data from multiple countries (or regions), unavoidable biases may arise in the measurement analysis process due to statistical calibration issues or incomplete data. A study is complete if these results can be generalized and used to anticipate future problems and therefore help to solve them appropriately. It is now a question of asking whether the hypothesis of the Kuznets curve can be used to predict the evolution of the quality of the environment based on growth.
 
+### VAR
+
+In order to predict the model and analyze its dynamic effects, we apply the VAR model for regression. Since VAR model is applied to time series, we choose France as a representative to analyze. Three variables are chose for regression: co2, population and gdp. Firstly, We conducted stationarity tests on these three variables to ensure that the regression is not influenced by time trends. However, the results do not completely reject the presence of a unit root, suggesting that the data might be non-stationary.
+
+```{r}
+install.packages("vars")
+install.packages("urca")
+install.packages("tsDyn")
+library(vars)
+library(urca)
+library(tsDyn)
+```
+
+```{r}
+data_three_variables <- owid_selected_no_na[c("country", "co2", "population", "gdp")]
+data_selected <- filter(data_three_variables, country == "France")
+
+## 
+summary(ur.df(data_selected$co2, type = "trend", lags = 1))
+summary(ur.df(data_selected$population, type = "trend", lags = 1))
+summary(ur.df(data_selected$gdp, type = "trend", lags = 1))
+```
+
+Then we need to decide the lag order. The choice of lag order can affect the accuracy and validity of the model. Statistically, the optimal lag order is usually selected using information criteria, such as Akaike Information Criterion (AIC), Bayesian Information Criterion (BIC) and HQIC (Hannan-Quinn Information Criterion). In this paper, we use AIC, HQ, SC and FPE. We decide the lag order as 5.
+
+```{r}
+var_select <- VARselect(data_selected[, c("co2", "population", "gdp")], lag.max = 10, type = "both")
+print(var_select$selection)
+```
+
+Next is the regression of VAR. The regression results obtained from the autovector regression model are nonlinear and are not directly interpreted in general. In order to test the dynamic relationship between co2, population and gdp, this paper adopts the impulse response function to study the effect of endogenous variable shocks on itself and other endogenous variables. In addition, this paper will give the corresponding variance decomposition diagrams to quantitatively analyze the impulse response effects among variables.
+
+```{r}
+## VAR
+var_model <- VAR(data_selected[, c("co2", "population", "gdp")], p = 5, type = "both")
+
+## IRF
+irf_1 <- irf(var_model, impulse = "co2", response = "gdp", n.ahead = 10)
+plot(irf_1)
+irf_2 <- irf(var_model, impulse = "gdp", response = "co2", n.ahead = 10)
+plot(irf_2)
+irf_3 <- irf(var_model, impulse = "population", response = "gdp", n.ahead = 10)
+plot(irf_3)
+irf_4 <- irf(var_model, impulse = "gdp", response = "population", n.ahead = 10)
+plot(irf_4)
+
+## 
+fevd_var <- fevd(var_model, n.ahead = 10)
+print(fevd_var)
+```
+
+Economically, these impulse responses and variance decomposition can be interpreted as follows:
+
+The negligible response of GDP to a CO2 shock may imply that in the short term, changes in environmental factors or regulations (as proxied by CO2 emissions) do not have a strong immediate impact on economic output. This could reflect the inelastic nature of economic activity to environmental changes in the short run.
+
+The volatile response of CO2 to GDP shocks may suggest that economic growth leads to fluctuating environmental outcomes. During periods of economic expansion, CO2 emissions may increase due to higher production and energy consumption, while during downturns, emissions may decrease. However, the wide confidence intervals indicate a high degree of uncertainty about this relationship.
+
+The negative impact of population shocks on GDP could be indicative of resource constraints or the pressures of rapid population growth on economic infrastructure. If an economy is not well-equipped to handle a growing population, it can lead to decreased productivity or strain on public services, which in turn could negatively impact GDP.
+
+The negative response of the population to a GDP shock might suggest that as GDP grows, there could be demographic shifts such as reduced birth rates, which are a common phenomenon in developed economies as they grow and individuals choose to have fewer children. However, given the wide confidence intervals, we cannot make a definitive conclusion about the nature of this relationship.
+
 ### Conlusion
 
 Our study consisted of analyzing the relationship between environmental indicators and economic growth. We tested the Environmental Kuznets Curve hypothesis, which suggests that in the early stages of development, economic impacts increase nvironmental pressures until a certain level of welfare is reached. Once this level is exceeded, the natural environment will improve if development continues, which may imply that the best way to improve environmental quality is to encourage economic growth. Our analysis uses environmental indicators to observe this relationship: CO2 emissions. A linear regression model of CO2 emissions versus GDP per capita suggests that the Environmental Kuznets Curve hypothesis is possible.
 
 The results obtained through our analysis are biased. Among other things, our current knowledge in econometrics and statistics allowed us to detect selection bias, omitted variables and multicollinearity. Nevertheless, the results obtained allow us to affirm that the environmental Kuznets curve does not fully reveal the relationship between the quality of the environment and economic growth. In sum, the environmental Kuznets curve curve is of limited relevance as a guide for developing policies for environmental protections or growth. Unlike the context of the 1970s, environmental protection issues are now at the heart of concerns, particularly with the sustainable development objectives. Research to improve the environmental Kuznets curve is imperative so that it can help answer these questions.
+
+In addition, we use the VAR model to analyze France, and we select three variables for regression: co2, population and gdp. The results of the analysis suggest that the unstable response of CO2 to GDP shocks may indicate that economic growth leads to fluctuations in environmental outcomes. During economic expansions, CO2 emissions may increase due to increased production and energy consumption, while during economic recessions emissions may decrease. However, the wide confidence intervals indicate a high degree of uncertainty about this relationship. Negative demographic responses to GDP shocks may indicate that as GDP increases, demographic changes may occur, such as declining birth rates, a common phenomenon in advanced economies as economies grow and individuals choose to have fewer children. However, given the wide confidence intervals, we cannot draw firm conclusions about the nature of this relationship.
 
 ### **A link to the github project:**
 
@@ -447,46 +510,3 @@ Energy Consumption Metrics: 'energy_per_capita' and 'energy_per_gdp' data were s
 Climate Change and Trade Variables: 'temperature_change_from_co2' and 'trade_co2' data were also sourced from the EIA and Zenodo databases. The increase in temperature due to CO2 emissions significantly impacts economic activities. Moreover, trade activities, being a vital part of the economy---especially in the context of international economic exchanges---can be further analyzed for robustness checks. These variables allow us to understand the broader impacts of environmental change on global trade and economic dynamics.
 
 This expanded and refined data construction provides a solid foundation for analyzing the intricate relationships between economic growth, population dynamics, environmental pollution, and energy consumption. It also allows for a nuanced understanding of how these factors interplay at both the national and global levels.
-
-```{r}
-install.packages("vars")
-install.packages("urca")
-install.packages("tsDyn") 
-library(vars)
-library(urca)
-library(tsDyn)
-
-```
-
-```{r}
-## 
-data_three_variables <- owid_selected_no_na[c("country", "co2", "population", "gdp")]
-data_selected <- filter(data_three_variables, country == "France")
-
-## 
-summary(ur.df(data_selected$co2, type = "trend", lags = 1))
-summary(ur.df(data_selected$population, type = "trend", lags = 1))
-summary(ur.df(data_selected$gdp, type = "trend", lags = 1))
-
-## 
-var_select <- VARselect(data_selected[, c("co2", "population", "gdp")], lag.max = 10, type = "both")
-print(var_select$selection)
-
-## VAR
-var_model <- VAR(data_selected[, c("co2", "population", "gdp")], p = 5, type = "both")
-
-## IRF
-irf_1 <- irf(var_model, impulse = "co2", response = "gdp", n.ahead = 10)
-plot(irf_1)
-irf_2 <- irf(var_model, impulse = "gdp", response = "co2", n.ahead = 10)
-plot(irf_2)
-irf_3 <- irf(var_model, impulse = "population", response = "gdp", n.ahead = 10)
-plot(irf_3)
-irf_4 <- irf(var_model, impulse = "gdp", response = "population", n.ahead = 10)
-plot(irf_4)
-
-## 
-fevd_var <- fevd(var_model, n.ahead = 10)
-print(fevd_var)
-
-```
